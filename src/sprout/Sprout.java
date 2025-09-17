@@ -43,7 +43,7 @@ public class Sprout {
     }
 
     private void createAndShowGui() {
-        frame = new JFrame("Simple To-Do (Swing)");
+        frame = new JFrame("Sprout");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         // Model with two columns: Done (Boolean), Task (String)
