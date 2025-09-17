@@ -17,10 +17,11 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.io.IOException;
 import java.util.Base64;
+import com.google.gson.*;
 
 public class Sprout {
-    private static final Path DATA_FILE = Paths.get(System.getProperty("user.home"), ".todo_swing_tasks.txt");
-
+    private static final Path DATA_FILE = Paths.get(System.getProperty("user.home"), ".todo_swing_tasks.json");
+    private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
     private JFrame frame;
     private DefaultTableModel model;
     private JTable table;
@@ -228,45 +229,42 @@ public class Sprout {
     }
 
     private void loadTasks() {
+        DefaultTableModel model = (DefaultTableModel) table.getModel();
         model.setRowCount(0);
         if (!Files.exists(DATA_FILE)) return;
+
         try {
-            List<String> lines = Files.readAllLines(DATA_FILE, StandardCharsets.UTF_8);
-            for (String line : lines) {
-                if (line.trim().isEmpty()) continue;
-                String[] parts = line.split("\t", 2);
-                if (parts.length != 2) continue;
-                boolean done = "1".equals(parts[0]);
-                String base64 = parts[1];
-                String task = new String(Base64.getDecoder().decode(base64), StandardCharsets.UTF_8);
-                model.addRow(new Object[]{done, task});
+            String json = new String(Files.readAllBytes(DATA_FILE), StandardCharsets.UTF_8);
+            TodoItem[] items = gson.fromJson(json, TodoItem[].class);
+            for (TodoItem item : items) {
+                model.addRow(new Object[]{item.isDone(), item.getTask()});
             }
-            status("Loaded " + model.getRowCount() + " tasks.");
+            updateStatusCount();
+            status("Loaded " + items.length + " tasks.");
         } catch (IOException e) {
             e.printStackTrace();
             status("Failed to load tasks: " + e.getMessage());
-        } catch (IllegalArgumentException ex) {
-            // Base64 decoding issue
-            ex.printStackTrace();
-            status("Corrupt tasks file; starting fresh.");
         }
     }
 
+
     private void saveTasks() {
+        List<TodoItem> items = new ArrayList<>();
+        DefaultTableModel model = (DefaultTableModel) table.getModel();
+        for (int i = 0; i < model.getRowCount(); i++) {
+            boolean done = Boolean.TRUE.equals(model.getValueAt(i, 0));
+            String task = model.getValueAt(i, 1).toString();
+            items.add(new TodoItem(task, done));
+        }
+
         try {
-            List<String> out = new ArrayList<>();
-            for (int i = 0; i < model.getRowCount(); i++) {
-                boolean done = Boolean.TRUE.equals(model.getValueAt(i, 0));
-                String task = model.getValueAt(i, 1) == null ? "" : model.getValueAt(i, 1).toString();
-                String b64 = Base64.getEncoder().encodeToString(task.getBytes(StandardCharsets.UTF_8));
-                out.add((done ? "1" : "0") + "\t" + b64);
-            }
-            Files.write(DATA_FILE, out, StandardCharsets.UTF_8);
+            Files.write(DATA_FILE, gson.toJson(items).getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {
             e.printStackTrace();
             status("Failed to save tasks: " + e.getMessage());
         }
     }
+
 
     private void status(String s) {
         statusLabel.setText(s);
@@ -411,4 +409,21 @@ public class Sprout {
             rowsInserted = 0;
         }
     }
+    class TodoItem {
+        private boolean done;
+        private String task;
+
+        public TodoItem(String task, boolean done) {
+            this.task = task;
+            this.done = done;
+        }
+
+        // getters & setters
+        public boolean isDone() { return done; }
+        public void setDone(boolean done) { this.done = done; }
+        public String getTask() { return task; }
+        public void setTask(String task) { this.task = task; }
+    }
+
+    
 }
