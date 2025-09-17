@@ -3,6 +3,8 @@ package sprout;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Toolkit;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
 import javax.swing.*;
 import javax.swing.table.*;
 import javax.swing.event.*;
@@ -173,6 +175,12 @@ public class Sprout {
 
         // Focus the input field
         inputField.requestFocusInWindow();
+        
+        table.setDragEnabled(true);
+        table.setDropMode(DropMode.INSERT_ROWS);
+        table.setTransferHandler(new TableRowTransferHandler(table));
+
+
     }
 
     private void addTaskFromInput() {
@@ -275,5 +283,132 @@ public class Sprout {
             if (Boolean.TRUE.equals(model.getValueAt(i, 0))) done++;
         }
         statusLabel.setText(String.format("Tasks: %d — Done: %d", total, done));
+    }
+    // Robust row drag-and-drop handler for the JTable
+    private static class TableRowTransferHandler extends TransferHandler {
+        private final JTable table;
+        private List<Object[]> draggedRows;
+        private int[] sourceModelRows;      // original model indices of dragged rows
+        private int insertIndex = -1;       // model index where we inserted
+        private int rowsInserted = 0;       // how many rows we inserted
+        private static final DataFlavor FLAVOR = new DataFlavor(List.class, "List of rows");
+
+        public TableRowTransferHandler(JTable table) {
+            this.table = table;
+        }
+
+        @Override
+        protected Transferable createTransferable(JComponent c) {
+            int[] selectedViewRows = table.getSelectedRows();
+            sourceModelRows = new int[selectedViewRows.length];
+            draggedRows = new ArrayList<>();
+            DefaultTableModel model = (DefaultTableModel) table.getModel();
+
+            for (int i = 0; i < selectedViewRows.length; i++) {
+                int modelRow = table.convertRowIndexToModel(selectedViewRows[i]);
+                sourceModelRows[i] = modelRow;
+                int colCount = model.getColumnCount();
+                Object[] values = new Object[colCount];
+                for (int col = 0; col < colCount; col++) {
+                    values[col] = model.getValueAt(modelRow, col);
+                }
+                draggedRows.add(values);
+            }
+
+            return new Transferable() {
+                @Override public DataFlavor[] getTransferDataFlavors() { return new DataFlavor[]{FLAVOR}; }
+                @Override public boolean isDataFlavorSupported(DataFlavor d) { return FLAVOR.equals(d); }
+                @Override public Object getTransferData(DataFlavor d) { return draggedRows; }
+            };
+        }
+
+        @Override
+        public int getSourceActions(JComponent c) { return MOVE; }
+
+        @Override
+        public boolean canImport(TransferSupport support) {
+            return support.isDrop() && support.isDataFlavorSupported(FLAVOR);
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public boolean importData(TransferSupport support) {
+            if (!canImport(support)) return false;
+
+            JTable.DropLocation dl = (JTable.DropLocation) support.getDropLocation();
+            int viewRow = dl.getRow();
+            DefaultTableModel model = (DefaultTableModel) table.getModel();
+
+            // Convert view row to model insert index safely (handle drop-at-end)
+            final int modelInsert;
+            if (viewRow < 0) {
+                modelInsert = model.getRowCount();
+            } else if (viewRow >= table.getRowCount()) {
+                // dropped after the last visible row -> append at end of model
+                modelInsert = model.getRowCount();
+            } else {
+                modelInsert = table.convertRowIndexToModel(viewRow);
+            }
+
+            try {
+                List<Object[]> rows = (List<Object[]>) support.getTransferable().getTransferData(FLAVOR);
+
+                // Insert rows at modelInsert (remember original insert position)
+                int insertPos = modelInsert;
+                for (Object[] rowData : rows) {
+                    model.insertRow(insertPos++, rowData);
+                }
+
+                // record for exportDone removal
+                insertIndex = modelInsert;
+                rowsInserted = rows.size();
+
+                // select the newly inserted rows (convert to view indices)
+                if (rowsInserted > 0) {
+                    int firstView = table.convertRowIndexToView(insertIndex);
+                    int lastView  = table.convertRowIndexToView(insertIndex + rowsInserted - 1);
+                    if (firstView >= 0 && lastView >= firstView) {
+                        table.getSelectionModel().setSelectionInterval(firstView, lastView);
+                    }
+                }
+                return true;
+            } catch (Exception e) {
+                e.printStackTrace();
+                return false;
+            }
+        }
+
+        @Override
+        protected void exportDone(JComponent c, Transferable t, int action) {
+            if (action == MOVE && sourceModelRows != null) {
+                DefaultTableModel model = (DefaultTableModel) table.getModel();
+
+                // remove original rows in reverse order. If we inserted rows before
+                // some original rows, those original indices have been shifted by rowsInserted.
+                Integer[] idxs = Arrays.stream(sourceModelRows).boxed().toArray(Integer[]::new);
+                Arrays.sort(idxs, Collections.reverseOrder());
+
+                for (int idx : idxs) {
+                    int removeIndex = idx;
+                    if (insertIndex >= 0 && idx >= insertIndex) {
+                        // insertion happened before this original index, so adjust
+                        removeIndex = idx + rowsInserted;
+                    }
+                    // safety check
+                    if (removeIndex >= 0 && removeIndex < model.getRowCount()) {
+                        model.removeRow(removeIndex);
+                    } else if (idx >= 0 && idx < model.getRowCount()) {
+                        // fallback: try original index if in bounds
+                        model.removeRow(idx);
+                    }
+                }
+            }
+
+            // reset state
+            draggedRows = null;
+            sourceModelRows = null;
+            insertIndex = -1;
+            rowsInserted = 0;
+        }
     }
 }
