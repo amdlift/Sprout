@@ -18,6 +18,12 @@ import java.nio.file.*;
 import java.util.*;
 import java.util.List;
 
+/**
+ * This is the main class for making the UI and putting the other classes together
+ * @see TodoItem
+ * @see TreePanel
+ */
+
 public class Sprout {
     private JTable table;
     private TreePanel treePanel;
@@ -26,10 +32,17 @@ public class Sprout {
     private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
     private static final Path DATA_FILE = Paths.get(System.getProperty("user.home"), ".sprout_tasks.json");
 
+    /**
+     * Initializes the swing utilities to allow use later
+     * @param args 
+     */
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new Sprout().createAndShowGui());
     }
-
+    /**
+     * Uses Swing to create the UI including the TreePanel visual
+     * @see TreePanel
+     */
     public void createAndShowGui() {
         JFrame frame = new JFrame("Sprout To-Do List");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -144,40 +157,71 @@ public class Sprout {
             e.printStackTrace();
         }
     }
-
+    /**
+     * Creates objects to be utilized in the to do list program that house the tasks.
+     * Contains a bool variable of done and string variable of task.
+     */
     // -------------------------------
     // TodoItem class for JSON
     // -------------------------------
     public static class TodoItem {
         private boolean done;
         private String task;
-
+        /**
+        * class constructor
+        */
         public TodoItem(String task, boolean done) {
             this.task = task;
             this.done = done;
         }
-
+        /**
+        * Getter function that will return the variable done to determine if a task is completed
+         * @return done
+        */
         public boolean isDone() { return done; }
+        /**
+        * A setter function for changing the done variable
+        * @param done The bool to be changed
+        */
         public void setDone(boolean done) { this.done = done; }
+        /**
+        * Getter function that will return the variable task 
+        * @return task
+        */
         public String getTask() { return task; }
+        /**
+        * A setter function for changing the done variable
+        * @param task the string to be changed
+        */
         public void setTask(String task) { this.task = task; }
     }
-
+    /**
+     * Creates the elements of the Tree panel and modifies the growth of said tree
+     */
     // -------------------------------
     // TreePanel class
     // -------------------------------
     public static class TreePanel extends JPanel {
         private double progress = 0.0;
-
+        
+        /**
+         * Sets the initial size of the tree panel
+         */
         public TreePanel() {
             setPreferredSize(new Dimension(200, 400));
         }
-
+        /**
+         * Takes in the current progress of tasks completed and scales the tree to be bigger or smaller based just much is completed
+         * @param progress a double var that determines how much should the tree be grown based on how many tasks completed
+         */
         public void setProgress(double progress) {
             this.progress = Math.max(0, Math.min(1, progress));
             repaint();
         }
-
+        
+        /**
+         * Sets the colors and shapes of the tree element before it is painted on screen
+         */
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
