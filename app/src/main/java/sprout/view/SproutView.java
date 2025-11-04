@@ -1,7 +1,7 @@
 package sprout.view;
 
 import sprout.controller.SproutController;
-import sprout.model.TodoListModel;
+import sprout.model.Persistence;
 import javax.swing.*;
 import java.awt.*;
 
@@ -11,7 +11,7 @@ public class SproutView {
     private final TreePanel treePanel;
     private final JPanel controlPanel;
 
-    public SproutView(SproutController controller, TodoListModel model) {
+    public SproutView(SproutController controller, Persistence model) {
         frame = new JFrame("Sprout To-Do List");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 

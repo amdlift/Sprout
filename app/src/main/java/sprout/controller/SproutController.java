@@ -1,15 +1,15 @@
 package sprout.controller;
 
-import sprout.model.TodoListModel;
+import sprout.model.Persistence;
 import sprout.view.SproutView;
 
 import javax.swing.*;
 
 public class SproutController {
-    private final TodoListModel model;
+    private final Persistence model;
     private final SproutView view;
 
-    public SproutController(TodoListModel model) {
+    public SproutController(Persistence model) {
         this.model = model;
         this.view = new SproutView(this, model);
 

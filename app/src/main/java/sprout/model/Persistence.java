@@ -8,12 +8,12 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.util.*;
 
-public class TodoListModel {
+public class Persistence {
     private final DefaultTableModel tableModel;
     private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
     private static final Path DATA_FILE = Paths.get(System.getProperty("user.home"), ".sprout_tasks.json");
 
-    public TodoListModel() {
+    public Persistence() {
         this.tableModel = new DefaultTableModel(new Object[]{"Done", "Task"}, 0) {
             @Override
             public Class<?> getColumnClass(int columnIndex) {
