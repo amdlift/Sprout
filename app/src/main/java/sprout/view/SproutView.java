@@ -8,7 +8,7 @@ import java.awt.*;
 public class SproutView {
     private final JFrame frame;
     private final JTable table;
-    private final TreePanel treePanel;
+    private final TreeGraphics treePanel;
     private final JPanel controlPanel;
 
     public SproutView(SproutController controller, Persistence model) {
@@ -17,7 +17,7 @@ public class SproutView {
 
         table = new JTable(model.getTableModel());
         table.setFillsViewportHeight(true);
-        treePanel = new TreePanel();
+        treePanel = new TreeGraphics();
 
         JButton addButton = new JButton("Add Task");
         JButton removeButton = new JButton("Remove Selected");
@@ -41,5 +41,5 @@ public class SproutView {
 
     public void show() { frame.setVisible(true); }
     public JTable getTable() { return table; }
-    public TreePanel getTreePanel() { return treePanel; }
+    public TreeGraphics getTreePanel() { return treePanel; }
 }

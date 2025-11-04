@@ -3,10 +3,10 @@ package sprout.view;
 import javax.swing.*;
 import java.awt.*;
 
-public class TreePanel extends JPanel {
+public class TreeGraphics extends JPanel {
     private double progress = 0.0;
 
-    public TreePanel() {
+    public TreeGraphics() {
         setPreferredSize(new Dimension(200, 400));
     }
 
