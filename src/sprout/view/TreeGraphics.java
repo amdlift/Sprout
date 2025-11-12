@@ -42,6 +42,7 @@ public class TreeGraphics extends JPanel {
         if(progress == 1.0){
             //flower stage
             g2.setColor(new Color(255, 192, 203)); //pink
+            
         }else if(progress >= 0.7){
             g2.setColor(new Color(255, 152, 150)); //red peach color
         }else if(progress >= 0.5){
@@ -57,36 +58,49 @@ public class TreeGraphics extends JPanel {
         int canopyWidth = (int) (trunkWidth + progress * 100);
         g2.fillOval(width / 2 - canopyWidth / 2, trunkY - canopyHeight + 10, canopyWidth, canopyHeight);
         
-        // Calculate center of the panel
-        //int centerX = getWidth() / 2;
-        //int centerY = getHeight() / 2;
-        int centerX = getWidth() / 3;
-        int centerY = getHeight() / 3;
+        //creates the flowers
+        if(progress == 1.0){
+            for(int flowerCount = 1; flowerCount < 8; flowerCount++){
+                // Calculate center of the flower
+                int centerX = 0;
+                int centerY = 0;
+                //centerX = getWidth() / (2+flowerCount)
+                //centerY = getHeight() / (2+flowerCount)
+                if(flowerCount%2 == 0){
+                    centerX = (width / 2 - canopyWidth / 2) +50 + (flowerCount*7);
+                    centerY = (trunkY - canopyHeight + 10)+30 + (flowerCount*20);
+                }else{
+                    centerX = (width / 2 - canopyWidth / 2)+18 + (flowerCount*7);
+                    centerY = (trunkY - canopyHeight + 10)+100 + (flowerCount*20);
+                }
+                
 
-        // Draw the flower center
-        int centerRadius = 5;
-        g2.setColor(Color.YELLOW);
-        g2.fillOval(centerX - centerRadius, centerY - centerRadius, centerRadius * 2, centerRadius * 2);
+                // Draw the flower center
+                int centerRadius = 5;
+                g2.setColor(Color.YELLOW);
+                g2.fillOval(centerX - centerRadius, centerY - centerRadius, centerRadius * 2, centerRadius * 2);
 
-        // Draw the petals
-        int numPetals = 10;
-        int petalLength = 15;
-        int petalWidth = 5;
-        g2.setColor(new Color(255, 130, 130));
+                // Draw the petals
+                int numPetals = 10;
+                int petalLength = 15;
+                int petalWidth = 5;
+                g2.setColor(new Color(255, 130, 130));
 
-        for (int i = 0; i < numPetals; i++) {
-            double angle = Math.toRadians(360.0 / numPetals * i);
+                for (int i = 0; i < numPetals; i++) {
+                    double angle = Math.toRadians(360.0 / numPetals * i);
 
-            // Translate and rotate for each petal
-            g2.translate(centerX, centerY);
-            g2.rotate(angle);
+                    // Translate and rotate for each petal
+                    g2.translate(centerX, centerY);
+                    g2.rotate(angle);
 
-            // Draw a petal as an ellipse
-            g2.fill(new Ellipse2D.Double(-petalWidth / 2, centerRadius, petalWidth, petalLength));
+                    // Draw a petal as an ellipse
+                    g2.fill(new Ellipse2D.Double(-petalWidth / 2, centerRadius, petalWidth, petalLength));
 
-            // Reset transformations
-            g2.rotate(-angle);
-            g2.translate(-centerX, -centerY);
+                    // Reset transformations
+                    g2.rotate(-angle);
+                    g2.translate(-centerX, -centerY);
+                }
+            }
         }
     }
 }
