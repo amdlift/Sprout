@@ -2,6 +2,7 @@ package sprout.view;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.geom.Ellipse2D;
 
 public class TreeGraphics extends JPanel {
     private double progress = 0.0;
@@ -55,5 +56,37 @@ public class TreeGraphics extends JPanel {
         
         int canopyWidth = (int) (trunkWidth + progress * 100);
         g2.fillOval(width / 2 - canopyWidth / 2, trunkY - canopyHeight + 10, canopyWidth, canopyHeight);
+        
+        // Calculate center of the panel
+        //int centerX = getWidth() / 2;
+        //int centerY = getHeight() / 2;
+        int centerX = getWidth() / 3;
+        int centerY = getHeight() / 3;
+
+        // Draw the flower center
+        int centerRadius = 5;
+        g2.setColor(Color.YELLOW);
+        g2.fillOval(centerX - centerRadius, centerY - centerRadius, centerRadius * 2, centerRadius * 2);
+
+        // Draw the petals
+        int numPetals = 10;
+        int petalLength = 15;
+        int petalWidth = 5;
+        g2.setColor(new Color(255, 130, 130));
+
+        for (int i = 0; i < numPetals; i++) {
+            double angle = Math.toRadians(360.0 / numPetals * i);
+
+            // Translate and rotate for each petal
+            g2.translate(centerX, centerY);
+            g2.rotate(angle);
+
+            // Draw a petal as an ellipse
+            g2.fill(new Ellipse2D.Double(-petalWidth / 2, centerRadius, petalWidth, petalLength));
+
+            // Reset transformations
+            g2.rotate(-angle);
+            g2.translate(-centerX, -centerY);
+        }
     }
 }
