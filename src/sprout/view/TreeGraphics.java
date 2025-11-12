@@ -37,7 +37,22 @@ public class TreeGraphics extends JPanel {
         int trunkY = height - trunkHeight;
         g2.fillRect(trunkX, trunkY, trunkWidth, trunkHeight);
 
-        g2.setColor(new Color(34, 139, 34));
+        //visual stages to the tree growing
+        if(progress == 1.0){
+            //flower stage
+            g2.setColor(new Color(255, 192, 203)); //pink
+        }else if(progress >= 0.7){
+            g2.setColor(new Color(255, 152, 150)); //red peach color
+        }else if(progress >= 0.5){
+            g2.setColor(new Color(255, 102, 103)); //redish pink
+        }else if(progress >= 0.3){
+            g2.setColor(new Color(255, 200, 103)); // peach color
+        }else if(progress >= 0.1){
+            g2.setColor(new Color(209, 139, 34)); // sickly green
+        }else{
+            g2.setColor(new Color(204, 209, 34)); // brownish color
+        }
+        
         int canopyWidth = (int) (trunkWidth + progress * 100);
         g2.fillOval(width / 2 - canopyWidth / 2, trunkY - canopyHeight + 10, canopyWidth, canopyHeight);
     }
