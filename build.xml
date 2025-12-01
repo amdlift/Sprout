@@ -10,6 +10,24 @@
 <project name="Sprout" default="default" basedir=".">
     <description>Builds, tests, and runs the project Sprout.</description>
     <import file="nbproject/build-impl.xml"/>
+    <target name="standalone-jar" depends="jar">
+        <echo message="Building standalone (fat) JAR..."/>
+
+        <jar destfile="dist/Sprout-standalone.jar" compress="true">
+            <!-- Include your compiled classes -->
+            <fileset dir="${build.classes.dir}"/>
+
+            <!-- Include all dependency JARs copied by NetBeans -->
+            <zipgroupfileset dir="dist/lib" includes="*.jar"/>
+
+            <manifest>
+                <attribute name="Main-Class" value="sprout.Sprout"/>
+            </manifest>
+        </jar>
+
+        <echo message="Standalone JAR created at dist/Sprout-standalone.jar"/>
+    </target>
+
     <!--
 
     There exist several targets which are by default empty and which can be 
@@ -71,3 +89,4 @@
 
     -->
 </project>
+
