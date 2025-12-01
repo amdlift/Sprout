@@ -1,1 +1,0 @@
-typeSearchIndex = [{"l":"All Classes and Interfaces","u":"allclasses-index.html"},{"p":"sprout.model","l":"Persistence"},{"p":"sprout","l":"Sprout"},{"p":"sprout.controller","l":"SproutController"},{"p":"sprout.view","l":"SproutView"},{"p":"sprout.model","l":"TodoItem"},{"p":"sprout.view","l":"TreeGraphics"}];updateSearchResults();
