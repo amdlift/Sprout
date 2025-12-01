@@ -1,1 +1,1 @@
-packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"sprout"}];updateSearchResults();
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"sprout"},{"l":"sprout.controller"},{"l":"sprout.model"},{"l":"sprout.view"}];updateSearchResults();

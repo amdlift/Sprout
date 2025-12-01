@@ -8,11 +8,18 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.util.*;
 
+/**
+ * class for loading and saving the current tasks in the list and returning how many tasks have been completed
+ * 
+ */
+
 public class Persistence {
     private final DefaultTableModel tableModel;
     private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
     private static final Path DATA_FILE = Paths.get(System.getProperty("user.home"), ".sprout_tasks.json");
-
+    /**
+     * constructor of persistence
+     */
     public Persistence() {
         this.tableModel = new DefaultTableModel(new Object[]{"Done", "Task"}, 0) {
             @Override
@@ -25,11 +32,16 @@ public class Persistence {
             }
         };
     }
-
+    /**
+     * a getter function for accessing the tableModel
+     * @return returns tableModel
+     */
     public DefaultTableModel getTableModel() {
         return tableModel;
     }
-
+    /**
+     * loads the saved tasks into the list
+     */
     public void loadTasks() {
         if (!Files.exists(DATA_FILE)) return;
         try {
@@ -42,7 +54,9 @@ public class Persistence {
             e.printStackTrace();
         }
     }
-
+    /**
+     * saves any new tasks into the list
+     */
     public void saveTasks() {
         List<TodoItem> items = new ArrayList<>();
         for (int i = 0; i < tableModel.getRowCount(); i++) {
@@ -56,7 +70,10 @@ public class Persistence {
             e.printStackTrace();
         }
     }
-
+    /**
+     * returns the progress for the tasks
+     * @return returns the current total of tasks completed
+     */
     public double getProgress() {
         int total = tableModel.getRowCount();
         int done = 0;
