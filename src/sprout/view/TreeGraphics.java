@@ -3,19 +3,30 @@ package sprout.view;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
-
+/**
+ * the class for making the tree graphic
+ * 
+ */
 public class TreeGraphics extends JPanel {
     private double progress = 0.0;
-
+    /**
+     * the constructor that sets the dimension of the tree panel
+     */
     public TreeGraphics() {
         setPreferredSize(new Dimension(200, 400));
     }
-
+    /**
+     * a setter function for changing the progress variable
+     * @param progress the current tree progress value
+     */
     public void setProgress(double progress) {
         this.progress = Math.max(0, Math.min(1, progress));
         repaint();
     }
-
+    /**
+     * creates all the graphics including the tree panel and to do list panel
+     * @param g the graphics object
+     */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
